@@ -725,6 +725,9 @@ function envWA(){
   if(!c){alert('Por favor escribe tu número de celular');return}
   if(!asist){alert('Por favor indica si podrás asistir');return}
   const at=asist==='si'?'✅ ¡Sí asistiré con mucho gusto!':'😢 Lamentablemente no podré asistir';
+  const atForm=asist==='si'?'✅ ¡Sí asistiré con gusto!':'😢 No podré asistir';
+
+  // 1. Send to WhatsApp
   let t=`💍 *CONFIRMACIÓN DE ASISTENCIA*
 🌹 *Boda de María Alejandra & Luis Enrique*
 📅 26 de Julio de 2026 — 6:30 p.m.
@@ -739,6 +742,18 @@ ${at}`;
 💌 *Mensaje:*
 ${m}`;
   window.open(`https://wa.me/573044014651?text=${encodeURIComponent(t)}`,'_blank');
+
+  // 2. Send to Google Forms silently via fetch (no-cors)
+  const FORM_URL='https://docs.google.com/forms/d/e/1FAIpQLSdVk311Ekj6jr57yXuqLV7zclZXanGAQ3RpqHireIkoFs3J1A/formResponse';
+  const fd=new FormData();
+  fd.append('entry.791223414', n);
+  fd.append('entry.1089434395', c);
+  fd.append('entry.379023221', atForm);
+  fd.append('entry.989246992', ca||'No indicó');
+  fd.append('entry.443466458', m||'Sin mensaje');
+  fetch(FORM_URL, {method:'POST', mode:'no-cors', body:fd})
+    .catch(()=>{});
+
   closeM();
 }
 </script>
