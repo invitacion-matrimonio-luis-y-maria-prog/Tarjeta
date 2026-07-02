@@ -196,6 +196,35 @@ body{background:var(--cream);font-family:'Lato',sans-serif;overflow-x:hidden;col
 .rsvp-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;background:var(--gold);font-family:'Cinzel',serif;font-size:0.76rem;letter-spacing:3px;color:var(--wine-dark);text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;transition:all 0.3s;font-weight:700;box-shadow:0 4px 20px rgba(196,151,62,0.3)}
 .rsvp-btn:hover{background:var(--gold-light);transform:translateY(-2px)}
 
+/* RSVP big pulsing button + pointer */
+.rsvp-point-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.rsvp-point-arrow{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--gold-light);opacity:0;animation:fadeUp 0.8s 0.2s forwards}
+.rsvp-point-arrow span{font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:3px;text-transform:uppercase}
+.rsvp-point-arrow svg{animation:pointBounce 1.3s infinite}
+@keyframes pointBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.rsvp-btn-big{padding:28px 64px;font-size:1.15rem;letter-spacing:4px;border-radius:60px;background:linear-gradient(135deg,var(--gold-light),var(--gold) 55%,#a9791f);box-shadow:0 8px 30px rgba(196,151,62,0.5);animation:rsvpPulse 1.9s infinite;transform:scale(1)}
+.rsvp-btn-big:hover{background:linear-gradient(135deg,#f3dda0,var(--gold-light) 55%,var(--gold));transform:translateY(-3px) scale(1.04)}
+.rsvp-btn-big svg{width:26px;height:26px}
+@media(max-width:768px){.rsvp-btn-big{padding:22px 40px;font-size:0.98rem}}
+@keyframes rsvpPulse{
+  0%{box-shadow:0 8px 30px rgba(196,151,62,0.5),0 0 0 0 rgba(196,151,62,0.65)}
+  70%{box-shadow:0 8px 30px rgba(196,151,62,0.5),0 0 0 24px rgba(196,151,62,0)}
+  100%{box-shadow:0 8px 30px rgba(196,151,62,0.5),0 0 0 0 rgba(196,151,62,0)}
+}
+
+/* Floating "confirm attendance" CTA — follows the guest down the page */
+.float-rsvp{position:fixed;left:50%;bottom:1.5rem;transform:translate(-50%,120%);z-index:7500;display:inline-flex;align-items:center;gap:12px;background:linear-gradient(135deg,#FFE07A,#FFB627 45%,#E8432B 100%);color:#4A0F1C;font-family:'Cinzel',serif;font-size:0.86rem;letter-spacing:2.5px;text-transform:uppercase;font-weight:800;padding:20px 38px;border-radius:50px;box-shadow:0 10px 34px rgba(232,67,43,0.55);cursor:pointer;border:2px solid rgba(255,255,255,0.55);transition:transform 0.45s ease,opacity 0.45s ease;opacity:0;white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,0.25)}
+.float-rsvp:hover{transform:translate(-50%,-4px) scale(1.06)}
+.float-rsvp.show{transform:translate(-50%,0);opacity:1;animation:floatPulse 1.6s infinite}
+.float-rsvp.hide-away{transform:translate(-50%,120%);opacity:0}
+.float-rsvp svg{animation:pointBounce 1.3s infinite;flex-shrink:0;width:21px;height:21px}
+@keyframes floatPulse{
+  0%{box-shadow:0 10px 34px rgba(232,67,43,0.55),0 0 0 0 rgba(255,143,50,0.7)}
+  70%{box-shadow:0 10px 34px rgba(232,67,43,0.55),0 0 0 20px rgba(255,143,50,0)}
+  100%{box-shadow:0 10px 34px rgba(232,67,43,0.55),0 0 0 0 rgba(255,143,50,0)}
+}
+@media(max-width:768px){.float-rsvp{bottom:5.2rem;font-size:0.76rem;padding:17px 30px}}
+
 /* MODAL */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.35s;padding:1rem}
 .modal-ov.open{opacity:1;pointer-events:all}
@@ -290,7 +319,7 @@ body{background:var(--cream);font-family:'Lato',sans-serif;overflow-x:hidden;col
     <span class="h-amp">&</span>
     <h1 class="h-groom">Luis Enrique</h1>
     <p class="h-date">26 · Julio · 2026 · Valledupar</p>
-    <div class="h-scroll"><span>Desliza</span><div class="scroll-arr"></div></div>
+    <div class="h-scroll"><span>Desliza hasta el final para confirmar</span><div class="scroll-arr"></div></div>
   </div>
 </section>
 
@@ -594,7 +623,7 @@ body{background:var(--cream);font-family:'Lato',sans-serif;overflow-x:hidden;col
 </section>
 
 <!-- RSVP -->
-<section class="sec-dark" style="text-align:center">
+<section class="sec-dark" id="rsvp-section" style="text-align:center">
   <div class="sec-dark-in">
     <p class="lbl rv" style="color:var(--gold)">Confirmación</p>
     <h2 class="ttl ttl-lt rv">¿Nos acompañas?</h2>
@@ -603,9 +632,13 @@ body{background:var(--cream);font-family:'Lato',sans-serif;overflow-x:hidden;col
       Será un honor tenerte con nosotros en este día tan especial.<br>
       <strong style="font-style:normal;color:var(--gold-light)">Tenemos 1 lugar reservado especialmente para ti.</strong>
     </p>
-    <div class="rv">
-      <button class="rsvp-btn" onclick="openM()">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.66-.66a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+    <div class="rv rsvp-point-wrap">
+      <div class="rsvp-point-arrow">
+        <span>Confirma aquí</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 4v16M12 20l-6-6M12 20l6-6"/></svg>
+      </div>
+      <button class="rsvp-btn rsvp-btn-big" onclick="openM()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.66-.66a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
         Confirmar mi asistencia
       </button>
     </div>
@@ -619,6 +652,12 @@ body{background:var(--cream);font-family:'Lato',sans-serif;overflow-x:hidden;col
   <p class="f-names">María Alejandra &amp; Luis Enrique</p>
   <p class="f-sub">26 · Julio · 2026 · Valledupar, Cesar</p>
 </footer>
+
+<!-- FLOATING RSVP CTA -->
+<button class="float-rsvp" id="floatRsvp" onclick="goToRsvp()">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 4v16M12 20l-6-6M12 20l6-6"/></svg>
+  Baja para confirmar
+</button>
 
 <!-- MODAL RSVP - solo 2 opciones, sin cantidad de personas -->
 <div class="modal-ov" id="modal" onclick="closeM2(event)">
@@ -709,6 +748,23 @@ upCD();setInterval(upCD,1000);
 // REVEAL
 const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target)}})},{threshold:0.08});
 document.querySelectorAll('.rv,.rv-l,.rv-r,.rv-s').forEach(el=>obs.observe(el));
+
+// FLOATING RSVP CTA: show after leaving the hero, hide once the real RSVP button is on screen
+function goToRsvp(){document.getElementById('rsvp-section').scrollIntoView({behavior:'smooth',block:'center'})}
+const floatBtn=document.getElementById('floatRsvp');
+const rsvpSection=document.getElementById('rsvp-section');
+const heroEl=document.querySelector('.hero');
+let rsvpInView=false;
+const rsvpObs=new IntersectionObserver(es=>{es.forEach(e=>{rsvpInView=e.isIntersecting});updateFloat()},{threshold:0.15});
+if(rsvpSection)rsvpObs.observe(rsvpSection);
+let pastHero=false;
+const heroObs=new IntersectionObserver(es=>{es.forEach(e=>{pastHero=!e.isIntersecting});updateFloat()},{threshold:0});
+if(heroEl)heroObs.observe(heroEl);
+function updateFloat(){
+  if(!floatBtn)return;
+  if(pastHero&&!rsvpInView){floatBtn.classList.add('show');floatBtn.classList.remove('hide-away')}
+  else{floatBtn.classList.remove('show');floatBtn.classList.add('hide-away')}
+}
 
 // MODAL
 let asist='';
